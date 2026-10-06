@@ -1,0 +1,36 @@
+name: Build Orbital Strike Plugin
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Extract Project Zip
+        run: |
+          unzip -o OrbitalStrike-1.0.0-PaperMC-Project.zip -d .
+
+      - name: Build with Maven
+        run: mvn -f pom.xml clean package
+
+      - name: Upload Artifact (.jar)
+        uses: actions/upload-artifact@v4
+        with:
+          name: OrbitalStrike-1.0.0
+          path: target/OrbitalStrike-*.jar
+          if-no-files-found: error
+          
